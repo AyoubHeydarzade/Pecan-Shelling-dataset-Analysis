@@ -13,7 +13,7 @@ import seaborn as sns
 from statsmodels.graphics.factorplots import interaction_plot
 
 # Title for the app
-st.title('Pecan Intact Halves - Statistical Analysis')
+st.title('Pecan Project- Shelling Dataset - Statistical Analysis')
 
 # Step 1: Upload dataset
 st.subheader("Upload your dataset (Excel format)")
