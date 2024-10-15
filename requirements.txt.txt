@@ -2,3 +2,4 @@ pandas
 statsmodels
 seaborn
 matplotlib
+openpyxl
