@@ -27,10 +27,6 @@ if uploaded_file is not None:
 
     # Filter out the first five columns for analysis
     data = full_data.iloc[:, 5:]
-    
-    # Display the filtered dataset
-    st.write("Filtered dataset for analysis (excluding the first five columns):")
-    st.write(data.head())
 
     # Step 2: Main Effects Analysis (ANOVA)
     st.subheader("Main Effects Analysis (ANOVA)")
