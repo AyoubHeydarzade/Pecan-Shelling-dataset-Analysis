@@ -25,8 +25,8 @@ if uploaded_file is not None:
     st.write("Here is the full dataset:")
     st.write(full_data)
 
-    # Add Summary Statistics for Selected Columns
-    st.subheader("Summary Statistics for Selected Columns")
+    # Add Summary Statistics for Output Variables
+    st.subheader("Summary Statistics for Output Variables")
     
     # Specify the columns to summarize
     summary_columns = [
