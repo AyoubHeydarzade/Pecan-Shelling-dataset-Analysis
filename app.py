@@ -21,15 +21,15 @@ if uploaded_file is not None:
     # Load the dataset into a dataframe
     full_data = pd.read_excel(uploaded_file)
     
-    # Display the first five columns (not used in analysis)
-    st.write("Here are the first five columns (not included in the analysis):")
-    st.write(full_data.iloc[:, :5])
-    
+    # Display the entire dataset
+    st.write("Here is the full dataset:")
+    st.write(full_data)
+
     # Filter out the first five columns for analysis
     data = full_data.iloc[:, 5:]
     
     # Display the filtered dataset
-    st.write("Filtered dataset for analysis:")
+    st.write("Filtered dataset for analysis (excluding the first five columns):")
     st.write(data.head())
 
     # Step 2: Main Effects Analysis (ANOVA)
