@@ -103,3 +103,38 @@ if uploaded_file is not None:
         ax[3].set_ylabel(response_var)
 
         st.pyplot(fig)
+
+        # Step 5: Interaction Plots
+        st.write(f"Interaction Plots for {response_var}")
+
+        # Ensure relevant columns are numeric
+        data['Gap between Rings (in)'] = pd.to_numeric(data['Gap between Rings (in)'], errors='coerce')
+        data['Paddle Shaft RPM'] = pd.to_numeric(data['Paddle Shaft RPM'], errors='coerce')
+        data['Drum RPM'] = pd.to_numeric(data['Drum RPM'], errors='coerce')
+        data[response_var] = pd.to_numeric(data[response_var], errors='coerce')
+
+        # Drop rows with missing values in relevant columns
+        data_cleaned = data.dropna(subset=['Gap between Rings (in)', 'Paddle Shaft RPM', 'Drum RPM', response_var])
+
+        # Check if there is enough data for plotting
+        if not data_cleaned.empty:
+            fig, ax = plt.subplots(3, 1, figsize=(10, 18))
+
+            # Interaction between Gap between Rings and Paddle Shaft RPM
+            interaction_plot(data_cleaned['Gap between Rings (in)'], data_cleaned['Paddle Shaft RPM'], data_cleaned[response_var],
+                             colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[0])
+            ax[0].set_title(f'Interaction Between Gap between Rings (in) and Paddle Shaft RPM for {response_var}')
+
+            # Interaction between Gap between Rings and Drum RPM
+            interaction_plot(data_cleaned['Gap between Rings (in)'], data_cleaned['Drum RPM'], data_cleaned[response_var],
+                             colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[1])
+            ax[1].set_title(f'Interaction Between Gap between Rings (in) and Drum RPM for {response_var}')
+
+            # Interaction between Paddle Shaft RPM and Drum RPM
+            interaction_plot(data_cleaned['Paddle Shaft RPM'], data_cleaned['Drum RPM'], data_cleaned[response_var],
+                             colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[2])
+            ax[2].set_title(f'Interaction Between Paddle Shaft RPM and Drum RPM for {response_var}')
+
+            st.pyplot(fig)
+        else:
+            st.write(f"Not enough data for interaction plots for {response_var}.")
