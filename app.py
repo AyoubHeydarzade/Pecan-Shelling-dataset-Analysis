@@ -73,15 +73,28 @@ if uploaded_file is not None:
 
     # Step 4: Main Effects Plots
     st.subheader("Main Effects Plots")
+
+    # Generate plots for main effects
     fig, ax = plt.subplots(4, 1, figsize=(10, 24))  # Adjusted for 4 plots
+
+    # Main effect of Gap between Rings (in)
     sns.boxplot(x='Gap between Rings (in)', y='Intact Halves (%)', data=data, ax=ax[0])
     ax[0].set_title('Main Effect of Gap between Rings (in) on Intact Halves (%)')
+
+    # Main effect of Paddle Shaft RPM
     sns.boxplot(x='Paddle Shaft RPM', y='Intact Halves (%)', data=data, ax=ax[1])
     ax[1].set_title('Main Effect of Paddle Shaft RPM on Intact Halves (%)')
+
+    # Main effect of Drum RPM
     sns.boxplot(x='Drum RPM', y='Intact Halves (%)', data=data, ax=ax[2])
     ax[2].set_title('Main Effect of Drum RPM on Intact Halves (%)')
+
+    # Effect of Moisture level (%) on Intact Halves (%)
     sns.scatterplot(x='Moisture level (%)', y='Intact Halves (%)', data=data, ax=ax[3])
     ax[3].set_title('Effect of Moisture Level (%) on Intact Halves (%)')
+    ax[3].set_xlabel('Moisture Level (%)')
+    ax[3].set_ylabel('Intact Halves (%)')
+
     st.pyplot(fig)
 
     # Step 5: Interaction Plots
