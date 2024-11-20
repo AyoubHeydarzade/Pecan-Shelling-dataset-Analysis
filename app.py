@@ -51,7 +51,7 @@ if uploaded_file is not None:
 
     # Step 2: Main Effects Analysis (ANOVA)
     st.subheader("Main Effects Analysis (ANOVA)")
-    main_effects_formula = 'Q("Intact Halves (%)") ~ C(Q("Gap between Rings (in)")) + C(Q("Paddle Shaft RPM")) + C(Q("Drum RPM"))'
+    main_effects_formula = 'Q("Intact Halves (%)") ~ C(Q("Gap between Rings (in)")) + C(Q("Paddle Shaft RPM")) + C(Q("Drum RPM")) + Q("Moisture level (%)")'
     main_effects_model = ols(main_effects_formula, data=data).fit()
     main_effects_anova_results = sm.stats.anova_lm(main_effects_model, typ=2)
     st.write("ANOVA Results for Main Effects")
@@ -62,6 +62,7 @@ if uploaded_file is not None:
     two_way_interaction_formula = '''Q("Intact Halves (%)") ~ C(Q("Gap between Rings (in)")) 
                                      + C(Q("Paddle Shaft RPM")) 
                                      + C(Q("Drum RPM")) 
+                                     + Q("Moisture level (%)")
                                      + C(Q("Gap between Rings (in)")):C(Q("Paddle Shaft RPM")) 
                                      + C(Q("Gap between Rings (in)")):C(Q("Drum RPM")) 
                                      + C(Q("Paddle Shaft RPM")):C(Q("Drum RPM"))'''
@@ -72,13 +73,15 @@ if uploaded_file is not None:
 
     # Step 4: Main Effects Plots
     st.subheader("Main Effects Plots")
-    fig, ax = plt.subplots(3, 1, figsize=(10, 18))
+    fig, ax = plt.subplots(4, 1, figsize=(10, 24))  # Adjusted for 4 plots
     sns.boxplot(x='Gap between Rings (in)', y='Intact Halves (%)', data=data, ax=ax[0])
     ax[0].set_title('Main Effect of Gap between Rings (in) on Intact Halves (%)')
     sns.boxplot(x='Paddle Shaft RPM', y='Intact Halves (%)', data=data, ax=ax[1])
     ax[1].set_title('Main Effect of Paddle Shaft RPM on Intact Halves (%)')
     sns.boxplot(x='Drum RPM', y='Intact Halves (%)', data=data, ax=ax[2])
     ax[2].set_title('Main Effect of Drum RPM on Intact Halves (%)')
+    sns.scatterplot(x='Moisture level (%)', y='Intact Halves (%)', data=data, ax=ax[3])
+    ax[3].set_title('Effect of Moisture Level (%) on Intact Halves (%)')
     st.pyplot(fig)
 
     # Step 5: Interaction Plots
@@ -88,9 +91,10 @@ if uploaded_file is not None:
     data['Gap between Rings (in)'] = pd.to_numeric(data['Gap between Rings (in)'], errors='coerce')
     data['Paddle Shaft RPM'] = pd.to_numeric(data['Paddle Shaft RPM'], errors='coerce')
     data['Intact Halves (%)'] = pd.to_numeric(data['Intact Halves (%)'], errors='coerce')
+    data['Moisture level (%)'] = pd.to_numeric(data['Moisture level (%)'], errors='coerce')
 
     # Drop rows with missing values in relevant columns
-    data = data.dropna(subset=['Gap between Rings (in)', 'Paddle Shaft RPM', 'Intact Halves (%)'])
+    data = data.dropna(subset=['Gap between Rings (in)', 'Paddle Shaft RPM', 'Intact Halves (%)', 'Moisture level (%)'])
 
     # Check if there is enough data for plotting
     if not data.empty:
