@@ -62,14 +62,34 @@ if uploaded_file is not None:
 
     # Step 5: Interaction Plots
     st.subheader("Interaction Plots")
-    fig, ax = plt.subplots(3, 1, figsize=(10, 18))
-    interaction_plot(data['Gap between Rings (in)'], data['Paddle Shaft RPM'], data['Intact Halves (%)'],
-                     colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[0])
-    ax[0].set_title('Interaction Between Gap between Rings (in) and Paddle Shaft RPM')
-    interaction_plot(data['Gap between Rings (in)'], data['Drum RPM'], data['Intact Halves (%)'],
-                     colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[1])
-    ax[1].set_title('Interaction Between Gap between Rings (in) and Drum RPM')
-    interaction_plot(data['Paddle Shaft RPM'], data['Drum RPM'], data['Intact Halves (%)'],
-                     colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[2])
-    ax[2].set_title('Interaction Between Paddle Shaft RPM and Drum RPM')
-    st.pyplot(fig)
+
+    # Ensure relevant columns are numeric
+    data['Gap between Rings (in)'] = pd.to_numeric(data['Gap between Rings (in)'], errors='coerce')
+    data['Paddle Shaft RPM'] = pd.to_numeric(data['Paddle Shaft RPM'], errors='coerce')
+    data['Intact Halves (%)'] = pd.to_numeric(data['Intact Halves (%)'], errors='coerce')
+
+    # Drop rows with missing values in relevant columns
+    data = data.dropna(subset=['Gap between Rings (in)', 'Paddle Shaft RPM', 'Intact Halves (%)'])
+
+    # Check if there is enough data for plotting
+    if not data.empty:
+        fig, ax = plt.subplots(3, 1, figsize=(10, 18))
+
+        # Interaction between Gap between Rings and Paddle Shaft RPM
+        interaction_plot(data['Gap between Rings (in)'], data['Paddle Shaft RPM'], data['Intact Halves (%)'],
+                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[0])
+        ax[0].set_title('Interaction Between Gap between Rings (in) and Paddle Shaft RPM')
+
+        # Interaction between Gap between Rings and Drum RPM
+        interaction_plot(data['Gap between Rings (in)'], data['Drum RPM'], data['Intact Halves (%)'],
+                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[1])
+        ax[1].set_title('Interaction Between Gap between Rings (in) and Drum RPM')
+
+        # Interaction between Paddle Shaft RPM and Drum RPM
+        interaction_plot(data['Paddle Shaft RPM'], data['Drum RPM'], data['Intact Halves (%)'],
+                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[2])
+        ax[2].set_title('Interaction Between Paddle Shaft RPM and Drum RPM')
+
+        st.pyplot(fig)
+    else:
+        st.write("Not enough data for interaction plots.")
