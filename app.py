@@ -49,85 +49,57 @@ if uploaded_file is not None:
     # Filter out the first five columns for analysis
     data = full_data.iloc[:, 5:]
 
-    # Step 2: Main Effects Analysis (ANOVA)
-    st.subheader("Main Effects Analysis (ANOVA)")
-    main_effects_formula = 'Q("Intact Halves (%)") ~ C(Q("Gap between Rings (in)")) + C(Q("Paddle Shaft RPM")) + C(Q("Drum RPM")) + Q("Moisture level (%)")'
-    main_effects_model = ols(main_effects_formula, data=data).fit()
-    main_effects_anova_results = sm.stats.anova_lm(main_effects_model, typ=2)
-    st.write("ANOVA Results for Main Effects")
-    st.write(main_effects_anova_results)
+    # Output variables to analyze
+    output_variables = [
+        "Intact Halves (%)",
+        "Discharge Throughput (lbs. %)",
+        "Loss (%)"
+    ]
 
-    # Step 3: Interaction Effects Analysis (ANOVA)
-    st.subheader("Main and 2-Way Interaction Effects Analysis (ANOVA)")
-    two_way_interaction_formula = '''Q("Intact Halves (%)") ~ C(Q("Gap between Rings (in)")) 
-                                     + C(Q("Paddle Shaft RPM")) 
-                                     + C(Q("Drum RPM")) 
-                                     + Q("Moisture level (%)")
-                                     + C(Q("Gap between Rings (in)")):C(Q("Paddle Shaft RPM")) 
-                                     + C(Q("Gap between Rings (in)")):C(Q("Drum RPM")) 
-                                     + C(Q("Paddle Shaft RPM")):C(Q("Drum RPM"))'''
-    two_way_interaction_model = ols(two_way_interaction_formula, data=data).fit()
-    two_way_interaction_anova_results = sm.stats.anova_lm(two_way_interaction_model, typ=2)
-    st.write("ANOVA Results for Main and 2-Way Interaction Effects")
-    st.write(two_way_interaction_anova_results)
+    # Iterate through output variables for separate analysis
+    for response_var in output_variables:
+        st.subheader(f"Analysis for {response_var}")
 
-    # Step 4: Main Effects Plots
-    st.subheader("Main Effects Plots")
+        # Step 2: Main Effects Analysis (ANOVA)
+        st.write(f"Main Effects Analysis (ANOVA) for {response_var}")
+        main_effects_formula = f'Q("{response_var}") ~ C(Q("Gap between Rings (in)")) + C(Q("Paddle Shaft RPM")) + C(Q("Drum RPM")) + Q("Moisture level (%)")'
+        main_effects_model = ols(main_effects_formula, data=data).fit()
+        main_effects_anova_results = sm.stats.anova_lm(main_effects_model, typ=2)
+        st.write(main_effects_anova_results)
 
-    # Generate plots for main effects
-    fig, ax = plt.subplots(4, 1, figsize=(10, 24))  # Adjusted for 4 plots
+        # Step 3: Main and 2-Way Interaction Effects Analysis (ANOVA)
+        st.write(f"Main and 2-Way Interaction Effects Analysis (ANOVA) for {response_var}")
+        two_way_interaction_formula = f'''Q("{response_var}") ~ C(Q("Gap between Rings (in)")) 
+                                          + C(Q("Paddle Shaft RPM")) 
+                                          + C(Q("Drum RPM")) 
+                                          + Q("Moisture level (%)")
+                                          + C(Q("Gap between Rings (in)")):C(Q("Paddle Shaft RPM")) 
+                                          + C(Q("Gap between Rings (in)")):C(Q("Drum RPM")) 
+                                          + C(Q("Paddle Shaft RPM")):C(Q("Drum RPM"))'''
+        two_way_interaction_model = ols(two_way_interaction_formula, data=data).fit()
+        two_way_interaction_anova_results = sm.stats.anova_lm(two_way_interaction_model, typ=2)
+        st.write(two_way_interaction_anova_results)
 
-    # Main effect of Gap between Rings (in)
-    sns.boxplot(x='Gap between Rings (in)', y='Intact Halves (%)', data=data, ax=ax[0])
-    ax[0].set_title('Main Effect of Gap between Rings (in) on Intact Halves (%)')
+        # Step 4: Main Effects Plots
+        st.write(f"Main Effects Plots for {response_var}")
+        fig, ax = plt.subplots(4, 1, figsize=(10, 24))  # Adjusted for 4 plots
 
-    # Main effect of Paddle Shaft RPM
-    sns.boxplot(x='Paddle Shaft RPM', y='Intact Halves (%)', data=data, ax=ax[1])
-    ax[1].set_title('Main Effect of Paddle Shaft RPM on Intact Halves (%)')
+        # Main effect of Gap between Rings (in)
+        sns.boxplot(x='Gap between Rings (in)', y=response_var, data=data, ax=ax[0])
+        ax[0].set_title(f'Main Effect of Gap between Rings (in) on {response_var}')
 
-    # Main effect of Drum RPM
-    sns.boxplot(x='Drum RPM', y='Intact Halves (%)', data=data, ax=ax[2])
-    ax[2].set_title('Main Effect of Drum RPM on Intact Halves (%)')
+        # Main effect of Paddle Shaft RPM
+        sns.boxplot(x='Paddle Shaft RPM', y=response_var, data=data, ax=ax[1])
+        ax[1].set_title(f'Main Effect of Paddle Shaft RPM on {response_var}')
 
-    # Effect of Moisture level (%) on Intact Halves (%)
-    sns.scatterplot(x='Moisture level (%)', y='Intact Halves (%)', data=data, ax=ax[3])
-    ax[3].set_title('Effect of Moisture Level (%) on Intact Halves (%)')
-    ax[3].set_xlabel('Moisture Level (%)')
-    ax[3].set_ylabel('Intact Halves (%)')
+        # Main effect of Drum RPM
+        sns.boxplot(x='Drum RPM', y=response_var, data=data, ax=ax[2])
+        ax[2].set_title(f'Main Effect of Drum RPM on {response_var}')
 
-    st.pyplot(fig)
-
-    # Step 5: Interaction Plots
-    st.subheader("Interaction Plots")
-
-    # Ensure relevant columns are numeric
-    data['Gap between Rings (in)'] = pd.to_numeric(data['Gap between Rings (in)'], errors='coerce')
-    data['Paddle Shaft RPM'] = pd.to_numeric(data['Paddle Shaft RPM'], errors='coerce')
-    data['Intact Halves (%)'] = pd.to_numeric(data['Intact Halves (%)'], errors='coerce')
-    data['Moisture level (%)'] = pd.to_numeric(data['Moisture level (%)'], errors='coerce')
-
-    # Drop rows with missing values in relevant columns
-    data = data.dropna(subset=['Gap between Rings (in)', 'Paddle Shaft RPM', 'Intact Halves (%)', 'Moisture level (%)'])
-
-    # Check if there is enough data for plotting
-    if not data.empty:
-        fig, ax = plt.subplots(3, 1, figsize=(10, 18))
-
-        # Interaction between Gap between Rings and Paddle Shaft RPM
-        interaction_plot(data['Gap between Rings (in)'], data['Paddle Shaft RPM'], data['Intact Halves (%)'],
-                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[0])
-        ax[0].set_title('Interaction Between Gap between Rings (in) and Paddle Shaft RPM')
-
-        # Interaction between Gap between Rings and Drum RPM
-        interaction_plot(data['Gap between Rings (in)'], data['Drum RPM'], data['Intact Halves (%)'],
-                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[1])
-        ax[1].set_title('Interaction Between Gap between Rings (in) and Drum RPM')
-
-        # Interaction between Paddle Shaft RPM and Drum RPM
-        interaction_plot(data['Paddle Shaft RPM'], data['Drum RPM'], data['Intact Halves (%)'],
-                         colors=['red', 'blue', 'green'], markers=['D', '^', 'o'], ms=10, ax=ax[2])
-        ax[2].set_title('Interaction Between Paddle Shaft RPM and Drum RPM')
+        # Effect of Moisture level (%) on the response variable
+        sns.scatterplot(x='Moisture level (%)', y=response_var, data=data, ax=ax[3])
+        ax[3].set_title(f'Effect of Moisture Level (%) on {response_var}')
+        ax[3].set_xlabel('Moisture Level (%)')
+        ax[3].set_ylabel(response_var)
 
         st.pyplot(fig)
-    else:
-        st.write("Not enough data for interaction plots.")
