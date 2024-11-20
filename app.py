@@ -25,6 +25,27 @@ if uploaded_file is not None:
     st.write("Here is the full dataset:")
     st.write(full_data)
 
+    # Add Summary Statistics for Selected Columns
+    st.subheader("Summary Statistics for Selected Columns")
+    
+    # Specify the columns to summarize
+    summary_columns = [
+        "Intact Halves (%)",
+        "Weight dist1. (%)",
+        "Weight dist2. (%)",
+        "Weight dist3. (%)",
+        "Discharge Throughput (lbs. %)",
+        "Loss (%)"
+    ]
+    
+    # Filter and calculate summary statistics
+    if all(col in full_data.columns for col in summary_columns):  # Ensure all columns exist
+        summary_stats = full_data[summary_columns].describe().T  # Transpose for better readability
+        st.write("Summary Statistics:")
+        st.write(summary_stats)
+    else:
+        st.write("Some selected columns are missing from the dataset. Please ensure all required columns are present.")
+
     # Filter out the first five columns for analysis
     data = full_data.iloc[:, 5:]
 
